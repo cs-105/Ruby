@@ -1,15 +1,30 @@
 #writen by Joshua Cross (10/17/2021)
 #last modified by Joshua Cross (10/17/2021)
 
-#TODO: figure out how reproductionRate will be formatted and then how to fit that into the reproduction method.
-
 
 class Species
-  def initialize(consumptionLevel, consumptionAmount, reproductionRate, population)
+  #globalPopulation is an array that contains the total population of each species across all Land objects
+  @@globalPopulation = []
+  #speciesID is the index used by the species in @@globalPopulation
+  #consumptionLevel is how high on the food chain a species is
+  #consumptionAmount is how much food a species needs
+  #reproductionRate multiplied by the current population and then added to the current population equals the new population
+  #localPopulation is how many of a given species exist in this the land area associated with this Species object
+  def initialize(speciesID, consumptionLevel, consumptionAmount, reproductionRate, localPopulation)
+    @speciesID = speciesID
     @consumptionLevel = consumptionLevel
     @consumptionAmount = consumptionAmount
     @reproductionRate = reproductionRate
-    @population = population
+    @localPopulation = localPopulation
+    while(@@globalPopulation.size <= speciesID)
+      @@globalPopulation.push(0)
+    end
+    @@globalPopulation[speciesID] = @@globalPopulation[speciesID] + localPopulation
+
+  end
+
+  def getSpeciesID
+    return(@speciesID)
   end
 
   def getConsumptionLevel
@@ -24,14 +39,24 @@ class Species
     return(@reproductionRate)
   end
 
-  def getPopulation
-    return(@population)
+  def getLocalPopulation
+    return(@localPopulation)
+  end
+
+  def setLocalPopulation(newPop)
+    @localPopulaton = newPop
+    @@GlobalPopulation[speciesID] += newPop
+  end
+
+  def getGlobalPopulation
+    return(@@globalPopulation[@speciesID])
   end
 
   #this is a very rough prototype that will be updated!
   def reproduction
-    if(@population > 1)
-      @population = @population + (@population / @reproductionRate)
+    if(@localPopulation > 1)
+      @@globalPopulation[@speciesID] = @@globalPopulation[@speciesID] + (@localPopulation * @reproductionRate).floor
+      @localPopulation = @localPopulation + (@localPopulation * @reproductionRate).floor
     end
   end
 

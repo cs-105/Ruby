@@ -5,63 +5,51 @@ class Population
   #populationValues is an array of populations across the different months of the game
   @@populationValues = []
   #month is the index used in the array populationValues, incremented by the user's actions
-  #currentPopulation is the population at the month the user is at in the game
-  #lastPopulation is the population at the month the user was previously at in the game
+  @@month = 0
   #startingPopulation is the variable that takes input from the user for the starting population
-  
-  def initialize(month, currentPopulation, lastPopulation, startingPopulation)
-    @month = month
-    @currentPopulation = currentPopulation
-    @lastPopulation = lastPopulation
-    @startingPopulation = startingPopulation    
-  end
-  
-  def getMonth
-    return(@month)
-  end
-  
-  def getCurrentPopulation
-    return(setCurrentPopulation(@month))
-  end
-  
-  def getLastPopulation
-    @lastPopulation = @@populationValues[@month-1]
-  end
-  
-  def getStartingPopulation
-    #get user input for starting pop
-    #call setStartingPopulation with user input and put its value in a variable
-    return(@startingPopulation)
-  end
-  
-  def setMonth(month)
-    #user clicks next month and last month appended by 1 and that value put into month variable
-    #@month = something
+  #progressAnswer is whether the user answers Yes or No to progress a month in the game
+  #lastPopulation is the population at the month the user was previously at in the game
+  @@lastPopulation = 0
+  #currentPopulation is the population at the month the user is at in the game
+  @@currentPopulation = 0
+ 
+  def initialize(startingPopulation, progressAnswer)
+    @startingPopulation = startingPopulation
+    @progressAnswer = progressAnswer
   end
  
-  def setStartingPopulation(startPop)
-    #@month = 0 (may not matter)
-    @startingPopulation = startPop
-    #@@populationValues[month] += startPop maybe not the place to do this
-    #@currentPopulation = @startingPopulation (maybe not neccessary)
+  def setStartingPopulation
+    @@populationValues.unshift(@startPopulation) #appends startPop to beginning of array
+    #@@currentPopulation = @startingPopulation
   end
   
-  def setCurrentPopulation(month)
-    @month = month
-    @currentPopulation = @lastPopulation * ((2.71828) ** 0.1)
-  end
-  
-  def appendStartingPopulation
-    @@populationValues.unshift(@startingPopulation) #append startPop to the beginning of the array
-  end
-  
-  def appendPopulationByMonth
-    #call getCurrentPopulation
-    #now have starting population at index 0 in array and current population (by month)
-    #append each current population to the array as the months increment in the game  
+  def setCurrentPopulation
+    @@lastPopulation = @@populationValues[@@month-1]
+    @@currentPopulation = @@lastPopulation * ((2.71828) ** 0.1)
   end
     
-end  
+  def progressMonths
+    if(@progressAnswer == "Y")
+      @@month = @@month + 1
+      @@populationValues.insert(@@month, @@currentPopulation)
+      puts "Previous Population: #{@@populationValues[@@month-1]}
+      \nCurrent Population: #{@@populationValues[@@month]}
+      \nPopulation Change: #{@@populationValues[@@month] - @@populationValues[@@month-1]}"
+    else
+      @@month = @@month
+    end
+  end
+  
+end 
+  
+puts "Enter a starting population:"
+startPopulation = gets.chomp.to_i
+puts "To progress a month enter 'Y'"
+answer = gets.chomp.to_i
+
+population1 = Population.new(startPopulation, answer)
+
+  #print current population after each progressed month
 
   #Psuedocode:
   #currentPopulation takes the last month's population and uses the population growth formula to get a new population total
@@ -76,7 +64,7 @@ end
   #currentPopulation = lastPopulation * ((2.71828) ^ 0.1)
   
   #month number is equal to the index of the array
-  
+
   #Possible edge cases:
     #Within setCurrentPopulation, may need error catching with months to not be less than 0
 

@@ -20,15 +20,14 @@ class Population
  
   def setStartingPopulation
     @@populationValues.unshift(@startPopulation) #appends startPop to beginning of array
-    #@@currentPopulation = @startingPopulation
   end
   
   def setCurrentPopulation
     @@lastPopulation = @@populationValues[@@month-1]
-    @@currentPopulation = @@lastPopulation * ((2.71828) ** 0.1)
+    @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
   end
     
-  def progressMonths
+  def progressMonth
     if(@progressAnswer == "Y")
       @@month = @@month + 1
       @@populationValues.insert(@@month, @@currentPopulation)
@@ -48,6 +47,16 @@ puts "To progress a month enter 'Y'"
 answer = gets.chomp.to_i
 
 population1 = Population.new(startPopulation, answer)
+population1.setStartingPopulation
+population1.setCurrentPopulation
+population1.progressMonth
+
+while(answer != "Y")
+  puts "To progress a month enter 'Y'"
+  answer = gets.chomp.to_i
+  population1.progressMonth
+end
+
 
   #print current population after each progressed month
 

@@ -18,14 +18,17 @@ class Population
   end
  
   def appendStartingPopulation
-    @@populationValues.unshift(@startPopulation.to_f) #appends startPop to beginning of array
-    #puts @@populationValues.inspect (for debugging)
+    @@populationValues.unshift(@startingPopulation.to_f)#appends startPop to beginning of array
+    #puts @@populationValues.inspect #(for debugging)
     puts "Month: #{@@month}"
     puts "Population: #{@startingPopulation.to_i}"
   end
   
   def setCurrentPopulation
-    if(@@month > 0)
+    if(@@month == 0)
+      @@lastPopulation = @startingPopulation
+      @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    elsif(@@month > 0)
       @@lastPopulation = @@populationValues[@@month-1]
       @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
     end
@@ -52,14 +55,14 @@ startPopulation = gets.chomp
 while(quitAnswer != 'q')
   if(startPopulation != 'q')
     population1 = Population.new(startPopulation)
-    population1.appendStartingPopulation #doesn't work yet
+    population1.appendStartingPopulation
     answer = ""
     while (answer != 'q')
       puts "To progress a month enter 'Y'"
       answer = gets.chomp
       if(answer != 'q')
-        population1.progressMonth(answer)
         population1.setCurrentPopulation
+        population1.progressMonth(answer)
       elsif(answer == 'q')
         quitAnswer = 'q'
         puts "Quit simulation"
@@ -72,8 +75,6 @@ while(quitAnswer != 'q')
 end
 
 #To Do:
-
-#Need it to append startingPop to the array
 #Then append other pops to the array
 
 
@@ -84,5 +85,3 @@ end
 #Array gets updated and new populations put into the array for a new month
   
 #Figure out how the user can input starting population and increment the months in the game
-  
-#May need to add get methods for each variable

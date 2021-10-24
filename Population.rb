@@ -29,15 +29,15 @@ class Population
       @@lastPopulation = @startingPopulation
       @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
     elsif(@@month > 0)
-      @@lastPopulation = @@populationValues[@@month-1]
+      @@lastPopulation = @@populationValues[@@month]
       @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
     end
+    @@populationValues.insert(@@month + 1, @@currentPopulation)
   end
     
   def progressMonth(answer)
     @@month = @@month + 1
     if(answer == 'Y' && @@month > 0)
-      @@populationValues.insert(@@month, @@currentPopulation)
       puts "Month: #{@@month}"
       puts "Previous Population: #{@@populationValues[@@month-1].to_i}
       \nCurrent Population: #{@@populationValues[@@month].to_i}
@@ -73,10 +73,6 @@ while(quitAnswer != 'q')
     puts "Quit simulation"
   end
 end
-
-#To Do:
-#Then append other pops to the array
-
 
 #Specifications:
 

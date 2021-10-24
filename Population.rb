@@ -1,8 +1,8 @@
 #written by Jack Chiplin (10/20/2021)
-#last modified by Jack Chiplin (10/22/2021)
+#last modified by Jack Chiplin (10/23/2021)
 
 class Population
-  #populationValues is an array of populations across the different months of the game
+  #populationValues is an array of floats of populations across the different months of the game
   @@populationValues = []
   #month is the index used in the array populationValues, incremented by the user's actions
   @@month = 0
@@ -13,50 +13,67 @@ class Population
   #currentPopulation is the population at the month the user is at in the game
   @@currentPopulation = 0
  
-  def initialize(startingPopulation, progressAnswer)
+  def initialize(startingPopulation)
     @startingPopulation = startingPopulation
-    @progressAnswer = progressAnswer
   end
  
-  def setStartingPopulation
-    @@populationValues.unshift(@startPopulation) #appends startPop to beginning of array
+  def appendStartingPopulation
+    @@populationValues.unshift(@startPopulation.to_f) #appends startPop to beginning of array
+    #puts @@populationValues.inspect (for debugging)
+    puts "Month: #{@@month}"
+    puts "Population: #{@startingPopulation.to_i}"
   end
   
   def setCurrentPopulation
-    @@lastPopulation = @@populationValues[@@month-1]
-    @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    if(@@month > 0)
+      @@lastPopulation = @@populationValues[@@month-1]
+      @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    end
   end
     
-  def progressMonth
-    if(@progressAnswer == "Y")
-      @@month = @@month + 1
+  def progressMonth(answer)
+    @@month = @@month + 1
+    if(answer == 'Y' && @@month > 0)
       @@populationValues.insert(@@month, @@currentPopulation)
-      puts "Previous Population: #{@@populationValues[@@month-1]}
-      \nCurrent Population: #{@@populationValues[@@month]}
-      \nPopulation Change: #{@@populationValues[@@month] - @@populationValues[@@month-1]}"
-    else
-      @@month = @@month
+      puts "Month: #{@@month}"
+      puts "Previous Population: #{@@populationValues[@@month-1].to_i}
+      \nCurrent Population: #{@@populationValues[@@month].to_i}
+      \nPopulation Change: #{(@@populationValues[@@month] - @@populationValues[@@month-1]).to_i}"
     end
   end
   
 end 
-  
+
+quitAnswer = ""
+puts "To quit the simulation, enter 'q'"
 puts "Enter a starting population:"
-startPopulation = gets.chomp.to_i
-puts "To progress a month enter 'Y'"
-answer = gets.chomp.to_i
+startPopulation = gets.chomp
 
-population1 = Population.new(startPopulation, answer)
-population1.setStartingPopulation
-population1.setCurrentPopulation
-population1.progressMonth
-
-while(answer != "Y")
-  puts "To progress a month enter 'Y'"
-  answer = gets.chomp.to_i
-  population1.progressMonth
+while(quitAnswer != 'q')
+  if(startPopulation != 'q')
+    population1 = Population.new(startPopulation)
+    population1.appendStartingPopulation #doesn't work yet
+    answer = ""
+    while (answer != 'q')
+      puts "To progress a month enter 'Y'"
+      answer = gets.chomp
+      if(answer != 'q')
+        population1.progressMonth(answer)
+        population1.setCurrentPopulation
+      elsif(answer == 'q')
+        quitAnswer = 'q'
+        puts "Quit simulation"
+      end
+    end
+  elsif(startPopulation == 'q')
+    quitAnswer = 'q'
+    puts "Quit simulation"
+  end
 end
 
+
+#Need it to append startingPop to the array
+#Then append other pops to the array
 
   #print current population after each progressed month
 
@@ -87,8 +104,3 @@ end
   #Figure out how the user can input starting population and increment the months in the game
   
   #May need to add get methods for each variable
-
-
-
-
-

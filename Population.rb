@@ -1,8 +1,8 @@
 #written by Jack Chiplin (10/20/2021)
-#last modified by Jack Chiplin (10/22/2021)
+#last modified by Jack Chiplin (10/23/2021)
 
 class Population
-  #populationValues is an array of populations across the different months of the game
+  #populationValues is an array of floats of populations across the different months of the game
   @@populationValues = []
   #month is the index used in the array populationValues, incremented by the user's actions
   @@month = 0
@@ -13,82 +13,71 @@ class Population
   #currentPopulation is the population at the month the user is at in the game
   @@currentPopulation = 0
  
-  def initialize(startingPopulation, progressAnswer)
+  def initialize(startingPopulation)
     @startingPopulation = startingPopulation
-    @progressAnswer = progressAnswer
   end
  
-  def setStartingPopulation
-    @@populationValues.unshift(@startPopulation) #appends startPop to beginning of array
+  def appendStartingPopulation
+    @@populationValues.unshift(@startingPopulation.to_f)#appends startPop to beginning of array
+    #puts @@populationValues.inspect #(for debugging)
+    puts "Month: #{@@month}"
+    puts "Population: #{@startingPopulation.to_i}"
   end
   
   def setCurrentPopulation
-    @@lastPopulation = @@populationValues[@@month-1]
-    @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    if(@@month == 0)
+      @@lastPopulation = @startingPopulation
+      @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    elsif(@@month > 0)
+      @@lastPopulation = @@populationValues[@@month]
+      @@currentPopulation = @@lastPopulation.to_f * ((2.71828) ** 0.1)
+    end
+    @@populationValues.insert(@@month + 1, @@currentPopulation)
   end
     
-  def progressMonth
-    if(@progressAnswer == "Y")
-      @@month = @@month + 1
-      @@populationValues.insert(@@month, @@currentPopulation)
-      puts "Previous Population: #{@@populationValues[@@month-1]}
-      \nCurrent Population: #{@@populationValues[@@month]}
-      \nPopulation Change: #{@@populationValues[@@month] - @@populationValues[@@month-1]}"
-    else
-      @@month = @@month
+  def progressMonth(answer)
+    @@month = @@month + 1
+    if(answer == 'Y' && @@month > 0)
+      puts "Month: #{@@month}"
+      puts "Previous Population: #{@@populationValues[@@month-1].to_i}
+      \nCurrent Population: #{@@populationValues[@@month].to_i}
+      \nPopulation Change: #{(@@populationValues[@@month] - @@populationValues[@@month-1]).to_i}"
     end
   end
   
 end 
-  
+
+quitAnswer = ""
+puts "To quit the simulation, enter 'q'"
 puts "Enter a starting population:"
-startPopulation = gets.chomp.to_i
-puts "To progress a month enter 'Y'"
-answer = gets.chomp.to_i
+startPopulation = gets.chomp
 
-population1 = Population.new(startPopulation, answer)
-population1.setStartingPopulation
-population1.setCurrentPopulation
-population1.progressMonth
-
-while(answer != "Y")
-  puts "To progress a month enter 'Y'"
-  answer = gets.chomp.to_i
-  population1.progressMonth
+while(quitAnswer != 'q')
+  if(startPopulation != 'q')
+    population1 = Population.new(startPopulation)
+    population1.appendStartingPopulation
+    answer = ""
+    while (answer != 'q')
+      puts "To progress a month enter 'Y'"
+      answer = gets.chomp
+      if(answer != 'q')
+        population1.setCurrentPopulation
+        population1.progressMonth(answer)
+      elsif(answer == 'q')
+        quitAnswer = 'q'
+        puts "Quit simulation"
+      end
+    end
+  elsif(startPopulation == 'q')
+    quitAnswer = 'q'
+    puts "Quit simulation"
+  end
 end
 
+#Specifications:
 
-  #print current population after each progressed month
-
-  #Psuedocode:
-  #currentPopulation takes the last month's population and uses the population growth formula to get a new population total
-  #lastPopulation is the previous month's population
+#1 tile, 1 species for now, but try to allow for expansion to more species and tiles later
+#Create an object that contains data for rabbits that gets put into the array at every month 
+#Array gets updated and new populations put into the array for a new month
   
-  #on month 0
-  #startingPopulation = userInput()
-  #populationValues.append(startingPopulation)
-  #currentPopulation = startingPopulation
-  
-  #for each month,
-  #currentPopulation = lastPopulation * ((2.71828) ^ 0.1)
-  
-  #month number is equal to the index of the array
-
-  #Possible edge cases:
-    #Within setCurrentPopulation, may need error catching with months to not be less than 0
-
-
-
-#To Do:
-  #1 tile, 1 species for now, but try to allow for expansion to more species and tiles later
-  #Create an object that contains data for rabbits that gets put into the array at every month 
-  #Array gets updated and new populations put into the array for a new month
-  
-  #Figure out how the user can input starting population and increment the months in the game
-  
-  #May need to add get methods for each variable
-
-
-
-
-
+#Figure out how the user can input starting population and increment the months in the game

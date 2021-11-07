@@ -1,5 +1,5 @@
 #writen by Joshua Cross (10/17/2021)
-#last modified by Joshua Cross (10/17/2021)
+#last modified by Joshua Cross (11/6/2021)
 
 
 class Species
@@ -60,4 +60,20 @@ class Species
     end
   end
 
+  def to_s
+    return("Species (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s)
+  end
+
+end
+
+class BunnySpecies < Species
+  def to_s
+    return("Bunny (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s)
+  end
+end
+
+class WolfSpecies < Species
+  def to_s
+    return("Wolf (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s)
+  end
 end

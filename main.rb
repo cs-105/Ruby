@@ -1,12 +1,12 @@
 #writen by Taylor Birchem (10/19/2021)
 #last modified by Taylor Birchem (10/19/2021)
 
-require 'sinatra'
+require 'ruby2d'
 
-set :protection, :except => :frame_options
-set :bind, '0.0.0.0'
-set :port, 8080
+set width: 300, height: 200
 
-get '/' do
-  'Window that simulation will run in... This is a rough prototype and will be updated as project goes on.'
-end
+s = Square.new
+
+s.color = 'red'
+
+show

@@ -1,14 +1,58 @@
 #writen by Taylor Birchem (10/19/2021)
 #last modified by Joshua Cross (11/6/2021)
-require 'sinatra'
-require_relative 'test.rb'
+#writen by Taylor Birchem (10/19/2021)
+#last modified by Taylor Birchem (11/11/2021)
 
-set :protection, :except => :frame_options
-set :bind, '0.0.0.0'
-set :port, 8080
-#Josh here, the next line is a call to my test code. It can be commented out when not testing my code
-joshTestFunction
+require 'ruby2d'
 
-get '/' do
-  'Window that simulation will run in... This is a rough prototype and will be updated as project goes on.'
+set background:'white'
+set width: 300, height: 200
+
+puts board = [
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+  " "," "," "," "," "," "," "," ",
+]
+
+def display_board
+     puts row = ["   " "|" "   " "|" "   "]
+     puts separator = "-----------"
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
+     puts separator
+     puts row
 end
+
+display_board(board)
+
+class Bunnies
+  #input for bunnies
+    puts "How many bunnies would you like: "
+    bunnies = gets.chomp
+    puts(bunnies + " Bunnies")
+  end
+
+i = bunnies
+
+while i > 0
+ sort_by { rand }
+
+
+
+show

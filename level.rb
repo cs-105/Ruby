@@ -37,5 +37,3 @@ class Level < Window
     @tiles.index(@line.last) + 1 == @tiles.index(tile)
   end
 end
-
-Level.new().show

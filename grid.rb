@@ -10,7 +10,6 @@ class Grid < Square
 
   def initialize(params)
     @tiles = []
-    @dots = params[:dots]
     @grid_size = params[:grid_size] ||= 8
     @x = params[:x] ||= 60
     @y = params[:y] ||= 60

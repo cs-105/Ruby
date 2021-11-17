@@ -1,5 +1,5 @@
 #writen by Taylor Birchem (10/19/2021)
-
+require 'ruby2d'
 require_relative 'grid'
 
 class Level < Window
@@ -38,4 +38,4 @@ class Level < Window
   end
 end
 
-level.show
+Level.new().show

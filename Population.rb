@@ -1,5 +1,5 @@
 #writen by Jack Chiplin (10/20/2021)
-#last modified by Jack Chiplin (11/13/2021)
+#last modified by Jack Chiplin (11/30/2021)
 
 class Population
   #wolfPopulationValues is an array of populations across the different months of the game for wolves
@@ -23,11 +23,11 @@ class Population
   #waterDifference is an integer that is how much water animals desire that the tile doesn't have the quantity for
   @@waterDifference = 0
   #deadAnimals is an integer that is how many animals go thirsty in a month who die
-  @@deadAnimals = 0
-  #deadWolves is an integer that is how many wolves go thirsty in a month who die
-  @@deadWolves = 0
-  #deadBunnies is an integer that is how many bunnies go thirsty in a month who die
-  @@deadBunnies = 0
+  @@deadAnimalsByThirst = 0
+  #deadWolvesByThirst is an integer that is how many wolves go thirsty in a month who die
+  @@deadWolvesByThirst = 0
+  #deadBunniesByThirst is an integer that is how many bunnies go thirsty in a month who die
+  @@deadBunniesByThirst = 0
   #wolfPopulationGrowth is how many wolves were born in a month
   @@wolfPopulationGrowth = 0
   #bunnyPopulationGrowth is how many wolves were born in a month
@@ -42,6 +42,10 @@ class Population
   @@waterDesiredByBunnies = 0
   #waterDesired is the sum of water desired by bunnies and wolves
   @@waterDesired = 0
+  #deadWolvesByAge is an integer that is how many wolves die by old age in a month
+  @@deadWolvesByAge = 0
+  #deadBunniesByAge is an integer that is how many bunnies die by old age in a month
+  @@deadBunniesByAge = 0
 
   def initialize(wolfStartingPopulation, bunnyStartingPopulation)
     @wolfStartingPopulation = wolfStartingPopulation.to_f
@@ -65,13 +69,22 @@ class Population
     #if quantity does not satisfy all water desired
       @@waterDifference = @@waterDesired - @@waterQuantity
       #find how much water is still desired
-      @@deadAnimals = @@waterDifference / @@animalThirst
+      @@deadAnimalsByThirst = @@waterDifference / @@animalThirst
       #find how many animals die of thirst
-      @@deadWolves = @@deadAnimals * (@@currentWolfPopulation/((@@currentWolfPopulation + @@currentBunnyPopulation) + 0.01))
+      @@deadWolvesByThirst = @@deadAnimalsByThirst * (@@currentWolfPopulation/((@@currentWolfPopulation + @@currentBunnyPopulation) + 0.01))
       #find how many wolves die of thirst
-      @@deadBunnies = @@deadAnimals * (@@currentBunnyPopulation/((@@currentWolfPopulation + @@currentBunnyPopulation) + 0.01))
+      @@deadBunniesByThirst = @@deadAnimalsByThirst * (@@currentBunnyPopulation/((@@currentWolfPopulation + @@currentBunnyPopulation) + 0.01))
       #find how many bunnies die of thirst
     end
+  end
+
+  def dieByOldAge()
+    @@deadWolvesByAge = @@currentWolfPopulation * 0.02
+    @@deadBunniesByAge = @@currentBunnyPopulation * 0.02
+  end
+
+  def dieByStarvation()
+    #to do
   end
 
   def animalGrowth
@@ -82,12 +95,16 @@ class Population
       @@lastWolfPopulation = @@wolfPopulationValues[@@month]
       @@lastBunnyPopulation = @@bunnyPopulationValues[@@month]
     end
-    @@newWolfPopulation = @@lastWolfPopulation * ((2.71828) ** 0.1)
-    @@wolfPopulationGrowth = @@newWolfPopulation - @@lastWolfPopulation
-    #calculate growth for wolves in first month
-    @@newBunnyPopulation = @@lastBunnyPopulation * ((2.71828) ** 0.1)
-    @@bunnyPopulationGrowth = @@newBunnyPopulation - @@lastBunnyPopulation
-    #calculate growth for bunnies in first month
+    if(@@lastWolfPopulation >= 2)
+      @@newWolfPopulation = @@lastWolfPopulation * ((2.71828) ** 0.1)
+      @@wolfPopulationGrowth = @@newWolfPopulation - @@lastWolfPopulation
+      #calculate growth for wolves in first month
+    end
+    if(@@lastBunnyPopulation >= 2)
+      @@newBunnyPopulation = @@lastBunnyPopulation * ((2.71828) ** 0.1)
+      @@bunnyPopulationGrowth = @@newBunnyPopulation - @@lastBunnyPopulation
+      #calculate growth for bunnies in first month
+    end
   end
 
   def appendStartingPopulation
@@ -104,8 +121,10 @@ class Population
   def setCurrentPopulation
     animalGrowth()
     dieByThirst()
-    @@currentWolfPopulation = ((@@lastWolfPopulation - @@deadWolves) + @@wolfPopulationGrowth).to_i
-    @@currentBunnyPopulation = ((@@lastBunnyPopulation - @@deadBunnies) + @@bunnyPopulationGrowth).to_i
+    dieByOldAge()
+    dieByStarvation()
+    @@currentWolfPopulation = ((@@lastWolfPopulation - @@deadWolvesByThirst - @@deadWolvesByAge) + @@wolfPopulationGrowth).to_i
+    @@currentBunnyPopulation = ((@@lastBunnyPopulation - @@deadBunniesByThirst - @@deadBunniesByAge) + @@bunnyPopulationGrowth).to_i
     #subtract animals who die from thirst from the tile's current population and add those born
     @@wolfPopulationValues.insert(@@month + 1, @@currentWolfPopulation)
     @@bunnyPopulationValues.insert(@@month + 1, @@currentBunnyPopulation)
@@ -119,8 +138,8 @@ class Population
       Previous Bunny Population: #{@@bunnyPopulationValues[@@month-1].to_i}
       Wolves born: #{@@wolfPopulationGrowth.to_i}
       Bunnies born: #{@@bunnyPopulationGrowth.to_i}
-      Wolves dead by thirst: #{@@deadWolves.to_i}
-      Bunnies dead by thirst: #{@@deadBunnies.to_i}
+      Wolves dead: #{(@@deadWolvesByThirst + @@deadWolvesByAge).to_i}
+      Bunnies dead: #{(@@deadBunniesByThirst + @@deadBunniesByAge).to_i}
       Current Wolf Population: #{@@wolfPopulationValues[@@month].to_i}
       Current Bunny Population: #{@@bunnyPopulationValues[@@month].to_i}
       Wolf Population Change: #{(@@wolfPopulationValues[@@month].to_i) - (@@wolfPopulationValues[@@month-1].to_i)}
@@ -166,4 +185,3 @@ while(quitAnswer != 'q')
     puts "Quit simulation"
   end
 end
-

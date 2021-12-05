@@ -1,5 +1,5 @@
 #writen by Joshua Cross (10/17/2021)
-#last modified by Joshua Cross (11/6/2021)
+#last modified by Joshua Cross (11/26/2021)
 
 
 class Species
@@ -44,8 +44,8 @@ class Species
   end
 
   def setLocalPopulation(newPop)
-    @localPopulaton = newPop
-    @@GlobalPopulation[speciesID] += newPop
+    @@globalPopulation[@speciesID] += (newPop - @localPopulation)
+    @localPopulation = newPop
   end
 
   def getGlobalPopulation
@@ -68,12 +68,12 @@ end
 
 class BunnySpecies < Species
   def to_s
-    return("Bunny (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s)
+    return("Bunny (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s + "|")
   end
 end
 
 class WolfSpecies < Species
   def to_s
-    return("Wolf (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s)
+    return("Wolf (" + @speciesID.to_s + "); Local Population: " + @localPopulation.to_s + " GlobalPopulation: " + @@globalPopulation[@speciesID].to_s + "|")
   end
 end

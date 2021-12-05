@@ -1,5 +1,7 @@
 #writen by Jack Chiplin (10/20/2021)
-#last modified by Jack Chiplin (11/13/2021)
+#last modified by Jack Chiplin (12/4/2021)
+
+require_relative 'Grid.rb'
 
 class Population
   #wolfPopulationValues is an array of populations across the different months of the game for wolves
@@ -42,10 +44,18 @@ class Population
   @@waterDesiredByBunnies = 0
   #waterDesired is the sum of water desired by bunnies and wolves
   @@waterDesired = 0
+  
+  
 
-  def initialize(wolfStartingPopulation, bunnyStartingPopulation)
+  def initialize(bunnyStartingPopulation, wolfStartingPopulation, gridHeight, gridWidth)
     @wolfStartingPopulation = wolfStartingPopulation.to_f
     @bunnyStartingPopulation = bunnyStartingPopulation.to_f
+    @gridHeight = gridHeight
+    @gridWidth = gridWidth
+    
+    #gameGrid is the grid of Land objects
+    @gameGrid = Grid.new(@gridHeight, @gridWidth, Array[@bunnyStartingPopulation, @wolfStartingPopulation])
+    @gameGrid.output
   end
 
   def dieByThirst
@@ -74,7 +84,8 @@ class Population
     end
   end
 
-  def animalGrowth
+  def popAnimalGrowth()
+
     if(@@month == 0)
       @@lastWolfPopulation = @wolfStartingPopulation
       @@lastBunnyPopulation = @bunnyStartingPopulation
@@ -82,12 +93,18 @@ class Population
       @@lastWolfPopulation = @@wolfPopulationValues[@@month]
       @@lastBunnyPopulation = @@bunnyPopulationValues[@@month]
     end
+=begin
     @@newWolfPopulation = @@lastWolfPopulation * ((2.71828) ** 0.1)
     @@wolfPopulationGrowth = @@newWolfPopulation - @@lastWolfPopulation
     #calculate growth for wolves in first month
     @@newBunnyPopulation = @@lastBunnyPopulation * ((2.71828) ** 0.1)
     @@bunnyPopulationGrowth = @@newBunnyPopulation - @@lastBunnyPopulation
     #calculate growth for bunnies in first month
+=end
+    #JOSHREWORK
+    popchanges = @gameGrid.animalGrowth
+    @@bunnyPopulationGrowth = popchanges[0]
+    @@wolfPopulationGrowth = popchanges[1]
   end
 
   def appendStartingPopulation
@@ -96,13 +113,14 @@ class Population
     @@bunnyPopulationValues.unshift(@bunnyStartingPopulation) 
     #appends starting wolf population to beginning of array
     puts "\nMonth: #{@@month}
-    Wolf Population: #{@wolfStartingPopulation.to_i}
     Bunny Population: #{@bunnyStartingPopulation.to_i}
+    Wolf Population: #{@wolfStartingPopulation.to_i}
     \n"
   end
   
   def setCurrentPopulation
-    animalGrowth()
+    #JOSHNOTE animalGrowth and dieByThirst will need to be modified to make calls to grid functions
+    popAnimalGrowth()
     dieByThirst()
     @@currentWolfPopulation = ((@@lastWolfPopulation - @@deadWolves) + @@wolfPopulationGrowth).to_i
     @@currentBunnyPopulation = ((@@lastBunnyPopulation - @@deadBunnies) + @@bunnyPopulationGrowth).to_i
@@ -113,18 +131,19 @@ class Population
     
   def progressMonth(answer)
     @@month = @@month + 1
+    @gameGrid.output
     if((answer == 'Y' || 'y') && (@@month > 0) && (@@wolfPopulationValues[@@month] + @@bunnyPopulationValues[@@month] > 0))
       puts "\nMonth: #{@@month}
-      Previous Wolf Population: #{@@wolfPopulationValues[@@month-1].to_i}
       Previous Bunny Population: #{@@bunnyPopulationValues[@@month-1].to_i}
-      Wolves born: #{@@wolfPopulationGrowth.to_i}
+      Previous Wolf Population: #{@@wolfPopulationValues[@@month-1].to_i}
       Bunnies born: #{@@bunnyPopulationGrowth.to_i}
-      Wolves dead by thirst: #{@@deadWolves.to_i}
+      Wolves born: #{@@wolfPopulationGrowth.to_i}
       Bunnies dead by thirst: #{@@deadBunnies.to_i}
-      Current Wolf Population: #{@@wolfPopulationValues[@@month].to_i}
+      Wolves dead by thirst: #{@@deadWolves.to_i}
       Current Bunny Population: #{@@bunnyPopulationValues[@@month].to_i}
-      Wolf Population Change: #{(@@wolfPopulationValues[@@month].to_i) - (@@wolfPopulationValues[@@month-1].to_i)}
+      Current Wolf Population: #{@@wolfPopulationValues[@@month].to_i}
       Bunny Population Change: #{(@@bunnyPopulationValues[@@month].to_i) - (@@bunnyPopulationValues[@@month-1].to_i)}
+      Wolf Population Change: #{(@@wolfPopulationValues[@@month].to_i) - (@@wolfPopulationValues[@@month-1].to_i)}
       \n"
     elsif(@@wolfPopulationValues[@@month] + @@bunnyPopulationValues[@@month] == 0)
       puts "All animals dead. Game over."
@@ -132,38 +151,3 @@ class Population
   end
   
 end 
-
-quitAnswer = ""
-puts "To quit the simulation, enter 'q'"
-puts "Enter a starting population for wolves:"
-wolfStartPopulation = gets.chomp
-
-while(quitAnswer != 'q')
-  if(wolfStartPopulation != 'q')
-    puts "Enter a starting population for bunnies:"
-    bunnyStartPopulation = gets.chomp
-    if (bunnyStartPopulation != 'q')
-      population1 = Population.new(wolfStartPopulation, bunnyStartPopulation)
-      population1.appendStartingPopulation
-      answer = ""
-      while (answer != 'q')
-        puts "To progress a month enter 'Y' or 'y'"
-        answer = gets.chomp
-        if(answer != 'q')
-          population1.setCurrentPopulation
-          population1.progressMonth(answer)
-        elsif(answer == 'q')
-          quitAnswer = 'q'
-          puts "Quit simulation"
-        end
-      end
-    elsif(bunnyStartPopulation == 'q')
-      quitAnswer = 'q'
-      puts "Quit simulation"
-    end
-  elsif(wolfStartPopulation == 'q')
-    quitAnswer = 'q'
-    puts "Quit simulation"
-  end
-end
-

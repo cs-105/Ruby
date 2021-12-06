@@ -1,9 +1,10 @@
-#last modified by Joshua Cross (12/5/2021)
-#last modified by Jack Chiplin (12/4/2021)
+#last modified by Joshua Cross (11/26/2021)
+#last modified by Jack Chiplin (12/5/2021)
 #require 'sinatra'
 require_relative 'test.rb'
 require_relative 'Grid'
 require_relative 'Population.rb'
+require_relative 'Statistics.rb'
 
 #set :protection, :except => :frame_options
 #set :bind, '0.0.0.0'
@@ -15,11 +16,10 @@ require_relative 'Population.rb'
 #Jack's test
 quitAnswer = ""
 puts "To quit the simulation, enter 'q'"
-
+puts "Enter height of ecostystem grid:"
+gridHeight = gets.chomp.to_i
 
 while(quitAnswer != 'q')
-  puts "Enter height of ecostystem grid:"
-  gridHeight = gets.chomp.to_i
   if(gridHeight != 'q')
     puts "Enter width of ecosystem grid: (Expand window for larger widths)"
     gridWidth = gets.chomp.to_i
@@ -40,8 +40,9 @@ while(quitAnswer != 'q')
               population1.setCurrentPopulation
               population1.progressMonth(answer)
             elsif(answer == 'q')
+              graph = Statistics.new
               quitAnswer = 'q'
-              puts "Quit simulation"
+              puts "\nQuit simulation"
             end
           end
         elsif(bunnyStartPopulation == 'q')

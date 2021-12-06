@@ -225,7 +225,12 @@ class Grid
           end
           #speciesExcess =Array.new(@grid[rowIter][columnIter].getSpecies.length)
           deathTarget = totalDeadAnimals
-          totalPop = @grid[rowIter][columnIter].getSpecies[0].getLocalPopulation + @grid[rowIter][columnIter].getSpecies[1].getLocalPopulation
+          j = 0
+          totalPop = 0
+          while j < @grid[0][0].getSpecies.length
+            totalPop = totalPop + @grid[rowIter][columnIter].getSpecies[j].getLocalPopulation
+            j = j + 1
+          end
           while (totalDeadAnimals > 0) && (totalPop > 0)
             #find how many animals die of thirst
             #new version starts here
@@ -235,9 +240,8 @@ class Grid
               victim += 1
               russianRouletteID = russianRouletteID - @grid[rowIter][columnIter].getSpecies[victim].getLocalPopulation
             end
-            #puts victim
-            #puts deadAnimals
-            if (@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[victim] > 0)
+
+            if (@grid[rowIter][columnIter].getSpecies[victim].getLocalPopulation - deadAnimals[victim] > 0)
               deadAnimals[victim] += 1
               totalDeadAnimals -= 1
               totalPop -= 1
@@ -246,8 +250,8 @@ class Grid
           while focusID > 0
             globalDeaths[focusID - 1] = globalDeaths[focusID - 1] + deadAnimals[focusID - 1]
             #reflect changes in the grid
-            puts("deaths should be #{deathTarget}")
-            puts("deaths is #{deadAnimals}")
+            #puts("deaths should be #{deathTarget}")
+            #puts("deaths is #{deadAnimals}")
             @grid[rowIter][columnIter].getSpecies[focusID - 1].setLocalPopulation(@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[focusID - 1])
             focusID -= 1
           end

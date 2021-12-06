@@ -1,4 +1,4 @@
-#last modified by Joshua Cross (11/26/2021)
+#last modified by Joshua Cross (12/5/2021)
 #last modified by Jack Chiplin (12/4/2021)
 #require 'sinatra'
 require_relative 'test.rb'
@@ -15,10 +15,11 @@ require_relative 'Population.rb'
 #Jack's test
 quitAnswer = ""
 puts "To quit the simulation, enter 'q'"
-puts "Enter height of ecostystem grid:"
-gridHeight = gets.chomp.to_i
+
 
 while(quitAnswer != 'q')
+  puts "Enter height of ecostystem grid:"
+  gridHeight = gets.chomp.to_i
   if(gridHeight != 'q')
     puts "Enter width of ecosystem grid: (Expand window for larger widths)"
     gridWidth = gets.chomp.to_i
@@ -32,7 +33,7 @@ while(quitAnswer != 'q')
           population1 = Population.new(bunnyStartPopulation, wolfStartPopulation, gridHeight, gridWidth)
           population1.appendStartingPopulation
           answer = ""
-          while (answer != 'q')
+          while (answer != 'q' && Population.getAnyLife)
             puts "To progress a month enter 'Y' or 'y'"
             answer = gets.chomp
             if(answer != 'q')
@@ -64,3 +65,14 @@ end
 #get '/' do
 #  'Window that simulation will run in... This is a rough prototype and will be updated as project goes on.'
 #end
+
+
+#To Do:
+#Get it to change on a tile by tile basis
+#Get population to change for all tiles
+#Represent grid population numbers better
+
+#Problems in output right now:
+#Not outputing for all tiles
+#No animals being born (animal growth-- reproduction is not working)
+#No animals dying (by thirst for now-- dieByThirst not working)

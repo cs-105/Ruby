@@ -20,7 +20,7 @@ class BerryBush
   def initialize(localPopulation, foodRate = DEFAULTFOODRATE, reproductionRate = DEFAULTREPRODUCTIONRATE, mountain = false)
     @foodRate = foodRate
     @reproductionRate = reproductionRate
-    puts("mountain is " + mountain.to_s)
+    #puts("mountain is " + mountain.to_s)
     if(mountain)
       @popCap = MOUNTAINPOPCAP
     else
@@ -29,10 +29,10 @@ class BerryBush
     
     if(@popCap > localPopulation)
       @localPopulation = localPopulation
-      puts("@popCap > localPopulation")
+      #puts("@popCap > localPopulation")
     else
       @localPopulation = @popCap
-      puts("@popCap <= localPopulation")
+      #puts("@popCap <= localPopulation")
     end
     #puts("LOCAL POPULATION IS " + @localPopulation.to_s)
     @@globalPopulation = @@globalPopulation + @localPopulation

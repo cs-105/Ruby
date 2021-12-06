@@ -1,5 +1,5 @@
 #writen by Jack Chiplin (11/11/2021)
-#last modified by Jack Chiplin (11/13/2021)
+#last modified by Jack Chiplin (11/12/2021)
 
 #Given the current population on a tile
 #Allocate water to each animal to satisfy their thirst

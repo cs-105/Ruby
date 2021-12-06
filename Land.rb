@@ -14,18 +14,18 @@ class Land
   #@mountainous is true if elevation is greater than or equal to the mountainThreshold, false otherwise
   #@berryBushes is a BerryBush object that represents all of the berry bushes in this tile 
   def initialize(species, elevation, berryBushes = 0)
-    puts("berryBushes: " + berryBushes.to_s)
+    #puts("berryBushes: " + berryBushes.to_s)
     @species = species
     @elevation = elevation
     
     
     if(@elevation >= @@mountainThreshold)
-      puts("It's kind of a mountain")
+      #puts("It's kind of a mountain")
       @mountainous = true
       @berryBushes = BerryBush.new(berryBushes, 0, 0, true)
     else
       @mountainous = false
-      puts("It's not really a mountain")
+      #puts("It's not really a mountain")
       @berryBushes = BerryBush.new(berryBushes)
     end
     
@@ -52,7 +52,11 @@ class Land
   end
 
   def to_s
-    return("Land; " + " Elevation: " + @elevation.to_s)
+    speciesStrings = ""
+    for difSpec in @species
+      speciesStrings = speciesStrings + difSpec.to_s
+    end
+    return("Land; " + "Species: " + speciesStrings + " Elevation: " + @elevation.to_s + "\n\n")
   end
 
 end

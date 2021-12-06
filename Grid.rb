@@ -1,6 +1,6 @@
 #writen by Joshua Cross (11/26/2021)
 #last modified by Joshua Cross (11/26/2021)
-#last modified by Jack Chiplin (12/4/2021)
+#last modified by Jack Chiplin (12/5/2021)
 #purpose: demonstrate how to create the game grid and interact with it
 
 
@@ -149,7 +149,7 @@ class Grid
     end
   end
 
-  def animalGrowth
+def animalGrowth
     initIter = 0
     oldGlobalPops = Array.new
     while (initIter < @grid[0][0].getSpecies.length)
@@ -163,7 +163,11 @@ class Grid
         focusID = 0
         while (focusID < @grid[rowIter][columnIter].getSpecies.length)
           lastPop = @grid[rowIter][columnIter].getSpecies[focusID].getLocalPopulation
-          @grid[rowIter][columnIter].getSpecies[focusID].setLocalPopulation(lastPop * ((2.71828) ** 0.1))
+          if(@grid[rowIter][columnIter].getSpecies[focusID].getLocalPopulation > 1)
+            @grid[rowIter][columnIter].getSpecies[focusID].setLocalPopulation((lastPop * ((2.71828) ** 0.1)).to_i + 1)
+          else
+            @grid[rowIter][columnIter].getSpecies[focusID].setLocalPopulation((lastPop * ((2.71828) ** 0.1)).to_i)
+          end
           focusID = focusID + 1
         end
         columnIter = columnIter + 1
@@ -180,4 +184,283 @@ class Grid
     return(globalPopGrowths)
   end
 
+
+ def dieByThirst(waterQuantity)
+    #puts("water: #{waterQuantity}")
+    #rng = Random.new
+    numSpecies = @grid[0][0].getSpecies.length
+    rowIter = 0
+    globalDeaths = Array.new(numSpecies)
+    #to be returned to Population holding global deaths for each species (2)
+
+    deathIniter = 0
+    while (deathIniter < globalDeaths.length)
+      globalDeaths[deathIniter] = 0
+      deathIniter = deathIniter + 1
+      #fills array with 0s
+    end
+  
+    bunnyDeaths = Array.new
+    wolfDeaths = Array.new
+
+    #will be as many waterDesired arrays as tiles
+    while (rowIter < @grid.length)
+      columnIter = 0
+      while (columnIter < @grid[rowIter].length)
+        #puts("new tile")
+        focusID = 0
+        waterDesired = Array.new(numSpecies)
+        #one for each species in a tile
+
+        while (focusID < numSpecies)
+
+          waterDesired[focusID] = (@grid[rowIter][columnIter].getSpecies[focusID].getLocalPopulation) * Population.getAnimalThirst
+          #determine how much water is desired by each species on a tile in the given month
+
+          if(waterDesired[focusID] > waterQuantity)
+            #puts("\nThings are dying!")
+            #puts(@grid[rowIter][columnIter].getSpecies)
+            #if quantity does not satisfy all water desired
+            #find how much water is still desired
+            totalDeadAnimals = (waterDesired[focusID] - waterQuantity) / Population.getAnimalThirst
+            #this many animals die per tile
+
+            lastPopulation = @grid[rowIter][columnIter].getSpecies[focusID].getLocalPopulation
+            @grid[rowIter][columnIter].getSpecies[focusID].setLocalPopulation(lastPopulation - totalDeadAnimals)
+          else
+            totalDeadAnimals = 0
+          end
+
+          if(focusID == 0)
+            bunnyDeaths.push(totalDeadAnimals)
+          elsif(focusID == 1)
+            wolfDeaths.push(totalDeadAnimals)
+          end
+          
+          focusID = focusID + 1
+        end
+        columnIter = columnIter + 1
+      end
+      rowIter = rowIter + 1
+    end
+    totalBunnyDeaths = bunnyDeaths.sum
+    totalWolfDeaths = wolfDeaths.sum
+
+    globalDeaths.push(totalBunnyDeaths)
+    globalDeaths.push(totalWolfDeaths)
+
+    #puts "#{globalDeaths}"
+    return(globalDeaths)
+
+  end
+  
+        #puts "#{waterDesired}"
+        #totalWaterDesired = waterDesired.sum
+        #this number being calculated for every tile
+
+        #if water desired on that tile is more than the water on that tile
+
+  def predation
+    rng = Random.new
+    numSpecies = @grid[0][0].getSpecies.length
+    appetite = 2
+    
+    globalDeaths = Array.new(@grid[0][0].getSpecies.length)
+    deathIniter = 0
+    while (deathIniter < globalDeaths.length)
+      globalDeaths[deathIniter] = 0
+      deathIniter = deathIniter + 1
+    end
+    rowIter = 0
+    while (rowIter < @grid.length)
+      columnIter = 0
+      while (columnIter < @grid[rowIter].length)
+        #START WORK ON TILE
+        prey = 0
+        while (prey < numSpecies - 1)
+          if (@grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation >= @grid[rowIter][columnIter].getSpecies[prey + 1].getLocalPopulation * appetite && @grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation > 0)
+            #if the bunnies can feed all the wolves
+            globalDeaths[prey] += @grid[rowIter][columnIter].getSpecies[prey + 1].getLocalPopulation * appetite
+
+            globalDeaths[prey + 1] += 0
+
+
+            @grid[rowIter][columnIter].getSpecies[prey].setLocalPopulation((@grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation) - (@grid[rowIter][columnIter].getSpecies[prey + 1].getLocalPopulation) * appetite)
+
+
+          else
+            #if the bunnies can't feed all the wolves
+            localDeaths0 = @grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation - @grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation % appetite
+
+            globalDeaths[prey] += localDeaths0
+
+            localDeaths1 = (@grid[rowIter][columnIter].getSpecies[prey + 1].getLocalPopulation - @grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation / appetite)
+
+            globalDeaths[prey + 1] += localDeaths1
+
+
+            @grid[rowIter][columnIter].getSpecies[prey].setLocalPopulation((@grid[rowIter][columnIter].getSpecies[prey].getLocalPopulation) - localDeaths0)
+
+            @grid[rowIter][columnIter].getSpecies[prey + 1].setLocalPopulation((@grid[rowIter][columnIter].getSpecies[prey + 1].getLocalPopulation) - localDeaths1)
+          end
+          prey += 1
+        end
+
+
+
+        #STOP WORK ON TILE
+        columnIter += 1
+      end
+      rowIter += 1
+    end
+    return globalDeaths
+  end
+
 end
+
+=begin 
+            if(focusID == 0)
+              bunnyDeaths[rowIter][columnIter].push(totalDeadAnimals)
+            elsif(focusID == 1)
+              wolfDeaths[rowIter][columnIter].push(totalDeadAnimals)
+            end
+=end
+=begin
+    deathIniter = 0
+    while (deathIniter < globalDeaths.length)
+      globalDeaths[deathIniter] = 0
+      deathIniter = deathIniter + 1
+      #fills array with 0s
+    end
+=end
+=begin
+          while focusID > 0
+            globalDeaths[focusID - 1] = globalDeaths[focusID - 1] + deadAnimals[focusID - 1]
+            #reflect changes in the grid
+            puts("deaths should be #{deathTarget}")
+            puts("deaths is #{deadAnimals}")
+            @grid[rowIter][columnIter].getSpecies[focusID - 1].setLocalPopulation(@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[focusID - 1])
+            focusID -= 1
+          end
+=end
+
+=begin
+          deadAnimals = Array.new(numSpecies)
+          i = 0
+          while i < deadAnimals.length
+            deadAnimals[i] = 0 #?
+            i = i + 1
+          end
+          #speciesExcess =Array.new(@grid[rowIter][columnIter].getSpecies.length)
+          deathTarget = totalDeadAnimals
+          totalPop = @grid[rowIter][columnIter].getSpecies[0].getLocalPopulation + @grid[rowIter][columnIter].getSpecies[1].getLocalPopulation
+          while (totalDeadAnimals > 0) && (totalPop > 0)
+            #find how many animals die of thirst
+            #new version starts here
+            russianRouletteID = rng.rand(totalPop) + 1
+            victim = -1
+            while russianRouletteID > 0
+              victim += 1
+              russianRouletteID = russianRouletteID - @grid[rowIter][columnIter].getSpecies[victim].getLocalPopulation
+            end
+            #puts victim
+            #puts deadAnimals
+            if (@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[victim] > 0)
+              deadAnimals[victim] += 1
+              totalDeadAnimals -= 1
+              totalPop -= 1
+            end
+          end
+          while focusID > 0
+            globalDeaths[focusID - 1] = globalDeaths[focusID - 1] + deadAnimals[focusID - 1]
+            #reflect changes in the grid
+            puts("deaths should be #{deathTarget}")
+            puts("deaths is #{deadAnimals}")
+            @grid[rowIter][columnIter].getSpecies[focusID - 1].setLocalPopulation(@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[focusID - 1])
+            focusID -= 1
+          end
+          #puts(deadAnimals)
+          #puts(@grid[rowIter][columnIter].getSpecies)
+=end
+
+
+=begin
+ def dieByThirst(waterQuantity)
+    #puts("water: #{waterQuantity}")
+    rng = Random.new
+    numSpecies = @grid[0][0].getSpecies.length
+    rowIter = 0
+    globalDeaths = Array.new(@grid[0][0].getSpecies.length)
+    deathIniter = 0
+    while (deathIniter < globalDeaths.length)
+      globalDeaths[deathIniter] = 0
+      deathIniter = deathIniter + 1
+    end
+    while (rowIter < @grid.length)
+      columnIter = 0
+      while (columnIter < @grid[rowIter].length)
+        #puts("new tile")
+        focusID = 0
+        waterDesired = Array.new(numSpecies)
+        while (focusID < numSpecies)
+          waterDesired[focusID] = (@grid[rowIter][columnIter].getSpecies[focusID].getLocalPopulation) * Population.getAnimalThirst
+          #determine how much water is desired by each species on a tile in the given month
+          #used to be .getPrevPop
+          focusID = focusID + 1
+        end
+
+        totalWaterDesired = waterDesired.sum
+        puts "#{totalWaterDesired}"
+
+        if(totalWaterDesired > waterQuantity)
+          #puts("\nThings are dying!")
+          #puts(@grid[rowIter][columnIter].getSpecies)
+          #if quantity does not satisfy all water desired
+          waterDifference = totalWaterDesired - waterQuantity
+          #find how much water is still desired
+          totalDeadAnimals = waterDifference / Population.getAnimalThirst #10
+          deadAnimals = Array.new(numSpecies)
+          i = 0
+          while i < deadAnimals.length
+            deadAnimals[i] = 0 #?
+            i = i + 1
+          end
+          #speciesExcess =Array.new(@grid[rowIter][columnIter].getSpecies.length)
+          deathTarget = totalDeadAnimals
+          totalPop = @grid[rowIter][columnIter].getSpecies[0].getLocalPopulation + @grid[rowIter][columnIter].getSpecies[1].getLocalPopulation
+          while (totalDeadAnimals > 0) && (totalPop > 0)
+            #find how many animals die of thirst
+            #new version starts here
+            russianRouletteID = rng.rand(totalPop) + 1
+            victim = -1
+            while russianRouletteID > 0
+              victim += 1
+              russianRouletteID = russianRouletteID - @grid[rowIter][columnIter].getSpecies[victim].getLocalPopulation
+            end
+            #puts victim
+            #puts deadAnimals
+            if (@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[victim] > 0)
+              deadAnimals[victim] += 1
+              totalDeadAnimals -= 1
+              totalPop -= 1
+            end
+          end
+          while focusID > 0
+            globalDeaths[focusID - 1] = globalDeaths[focusID - 1] + deadAnimals[focusID - 1]
+            #reflect changes in the grid
+            puts("deaths should be #{deathTarget}")
+            puts("deaths is #{deadAnimals}")
+            @grid[rowIter][columnIter].getSpecies[focusID - 1].setLocalPopulation(@grid[rowIter][columnIter].getSpecies[focusID - 1].getLocalPopulation - deadAnimals[focusID - 1])
+            focusID -= 1
+          end
+          #puts(deadAnimals)
+          #puts(@grid[rowIter][columnIter].getSpecies)
+        end
+        columnIter = columnIter + 1
+      end
+      rowIter = rowIter + 1
+    end
+    #puts globalDeaths
+    return(globalDeaths)
+  end
+=end
